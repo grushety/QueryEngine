@@ -1,4 +1,7 @@
-package domain;
+package domain.event;
+
+import domain.event.EventType;
+import domain.event.StreamObject;
 
 import java.time.Instant;
 

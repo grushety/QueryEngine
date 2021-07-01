@@ -1,4 +1,4 @@
-package domain;
+package domain.event;
 
 import java.time.Instant;
 

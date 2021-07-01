@@ -1,5 +1,6 @@
-package domain;
+package domain.event;
 
+import java.time.Duration;
 import java.time.Instant;
 
 public class StreamObject implements Comparable<StreamObject>{
@@ -32,6 +33,11 @@ public class StreamObject implements Comparable<StreamObject>{
     }
     public boolean isPog(){
         return pog;
+    }
+
+    public long getDelay(){
+        Duration delay = Duration.between(ts, ats);
+        return delay.toSeconds();
     }
 
     @Override
