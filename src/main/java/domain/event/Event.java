@@ -13,4 +13,10 @@ public class Event extends StreamObject {
     public int getId(){
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "id: " +  id + ", type: "  + super.getType() + ", generation time: " + super.getTs().toString()
+                + ", arrival time: " + super.getAts().toString();
+    }
 }

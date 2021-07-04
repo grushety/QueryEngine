@@ -16,16 +16,14 @@ letter from A to E for negative event.
 
 1. convert input format to query format   + 
 2. convert eventObject from input as POG and Event Type + 
-3. create classifier that labels event as "POG", "OOO_EVENT" out_of_order, "POS_EVENT"
+3. create classifier that labels event as "POG", "OOO_EVENT" out_of_order, "POS_EVENT" +
 4. let work window operator
-    - convert window to duration
-    - for event 
     - return as actual stream for windows part of stream list
     - at each input event recalculate time window
-    - sort with ts  
+    - sort with ts
 (all POG changes schould be implemented in event 
 selection from stream, bei windows operator)
-5. define sel op that filter by id
+5. define sel op that filter by id + 
 6. define win_seq op that filter by positive event order
     - filter for initial eventType with all id
     - for each such event 

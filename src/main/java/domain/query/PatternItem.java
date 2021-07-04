@@ -1,9 +1,12 @@
 package domain.query;
 
+import domain.event.Event;
 import domain.event.EventType;
 
 public class PatternItem {
     private EventType eventType;
+    private PatternItem before;
+    private PatternItem after;
     private boolean positive;
 
     public PatternItem(EventType eventType, boolean positive) {
@@ -29,13 +32,46 @@ public class PatternItem {
         return positive;
     }
 
-    public String toString() {
+    public PatternItem getBefore(){
+        return before;
+    }
+
+    public void setBefore(PatternItem before){
+        this.before = before;
+    }
+
+    public PatternItem getAfter(){
+        return after;
+    }
+
+    public void setAfter(PatternItem after){
+        this.after = after;
+    }
+
+    public String toString(){
         String str;
         if (positive) {
-            str = "";
+            str = eventType.toString();
         } else {
-            str = "not ";
+            str = "not " + eventType.toString();
         }
-        return str + eventType.toString();
+        return str;
+    }
+
+    public String toStringComplete() {
+        String str = "[" + toString();
+        if (getBefore() != null ){
+            str = str + ", before: " + getBefore().toString();
+        }
+        else {
+            str = str + ", before: null";
+        }
+        if (getAfter() != null){
+            str = str + ", after: " + getAfter().toString()+ "]";
+        }
+        else {
+            str = str + ", after: null ]";
+        }
+        return str;
     }
 }
