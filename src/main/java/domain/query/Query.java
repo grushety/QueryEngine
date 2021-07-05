@@ -3,6 +3,7 @@ package domain.query;
 import domain.event.Event;
 import domain.event.EventType;
 import domain.event.StreamObject;
+import operators.Operators;
 
 import java.time.Duration;
 import java.util.*;
@@ -20,7 +21,7 @@ public class Query {
     public Query(String[] input) {
         try {
             int number = Integer.parseInt(input[0]);
-            this.window = Duration.ofMinutes(number);
+            this.window = Duration.ofSeconds(number);
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
         }
@@ -123,10 +124,9 @@ public class Query {
     }
 
     public int getEventIndexInPattern(Event event){
-        EventType type = event.getType();
-        Optional<PatternItem> patternItemOfType = eventPattern.stream().filter(it->it.getEventType().equals(type)).findFirst();
+        Optional<PatternItem> patternItemOfType = eventPattern.stream().filter(it->it.getEventType().equals(event.getType())).findFirst();
         if(patternItemOfType.isPresent()){
-            return eventPattern.indexOf(patternItemOfType);
+            return eventPattern.indexOf(patternItemOfType.get());
         }
         else {
             return -1;

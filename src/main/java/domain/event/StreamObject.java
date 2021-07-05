@@ -57,4 +57,8 @@ public class StreamObject{
             }
         };
     }
+
+    public String toString(){
+        return " [type: " + type + ", ts: " + ts.toString() + "] ";
+    }
 }

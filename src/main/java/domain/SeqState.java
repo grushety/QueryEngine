@@ -37,9 +37,10 @@ public class SeqState {
     }
 
     public void setFullList(List<Event> events) {
+        this.fullList = events;
         this.setIds();
         this.setSequenceList();
-        this.fullList = events;
+
     }
 
     public Map<Integer, List<Event>> getSequenceList() {

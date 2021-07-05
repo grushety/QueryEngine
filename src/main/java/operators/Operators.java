@@ -15,8 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Operators {
-    public Operators() {
-    }
+    public Operators() {}
 
     public static List<Event> select(int id, List<Event> events) {
         List<Event> filteredEvents = events.stream().filter(it -> it.getId() == id).collect(Collectors.toList());
@@ -67,30 +66,34 @@ public class Operators {
     public static List<Event> purge(List<Event> events, POGSeq pogSeq, Query query){
         List<Event> copy = new ArrayList<>(events);
         for (Event event: events){
-            if (isToPurge(events, pogSeq, query, event)){
+            boolean isToPurge = isToPurge(events, pogSeq, query, event);
+            if (isToPurge){
                 copy.remove(event);
             }
         }
+        //System.out.println("PURGE: before " + events.size()+ ", after: " + copy.size());
         return copy;
     }
 
     public static boolean isToPurge(List<Event> events, POGSeq pogSeq, Query query, Event event){
+
         Instant start = event.getTs().minus(query.getWindow());
         Instant end = event.getTs();
         int index = query.getEventIndexInPattern(event);
         if(index >= 0) {
             Set<EventType> typesBefore = query.getEventTypesBefore(index);
             Set<EventType> typesAfter = query.getEventTypesAfter(index);
+
             // for POGs of all type before this Event Type
-            List<POG> beforePOGs = pogSeq.filterPOGSeq(typesBefore);
-            List<POG> afterPOGs = pogSeq.filterPOGSeq(typesAfter);
+            Set<POG> beforePOGs = pogSeq.filterPOGSeq(typesBefore);
+            Set<POG> afterPOGs = pogSeq.filterPOGSeq(typesAfter);
             for (POG pog : beforePOGs) {
                 if (pog.getTs().isAfter(end)) {
-                    Event relevantEventBefore = findIfTypeInWindow(start, end, pog.getType(), events);
-                    if (relevantEventBefore == null) {
+                    Optional<Event> relevantEventBefore = findIfTypeInWindow(start, end, pog.getType(), events);
+                    if (relevantEventBefore.isEmpty()) {
                         return true;
                     } else {
-                        start = relevantEventBefore.getTs();
+                        start = relevantEventBefore.get().getTs();
                     }
                 }
             }
@@ -99,26 +102,24 @@ public class Operators {
             // for POG of all type after this Event Type
             for (POG pog : afterPOGs) {
                 if (pog.getTs().isAfter(end)) {
-                    Event relevantEventAfter = findIfTypeInWindow(start, end, pog.getType(), events);
-                    if (relevantEventAfter == null) {
+                    Optional<Event> relevantEventAfter = findIfTypeInWindow(start, end, pog.getType(), events);
+                    if (relevantEventAfter.isEmpty()) {
                         return true;
                     }
                     else {
-                        start = relevantEventAfter.getTs();
+                        start = relevantEventAfter.get().getTs();
                     }
                 }
             }
             return false;
         }
-        return true;
+        return false;
     }
 
-    private static Event findIfTypeInWindow(Instant start, Instant end, EventType type, List<Event> events){
-        Optional<Event> resultEvent = events
-                .stream()
+    private static Optional<Event> findIfTypeInWindow(Instant start, Instant end, EventType type, List<Event> events){
+        return events.stream()
                 .filter(it-> it.getType().equals(type)&&it.getTs().isAfter(start) && end.isAfter(it.getTs()))
                 .findFirst();
-        return resultEvent.orElse(null);
     }
 
     public boolean isInWindow(Instant start, Instant end, Event event){
