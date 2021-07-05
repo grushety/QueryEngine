@@ -1,5 +1,9 @@
 package domain.query;
 
+import domain.event.Event;
+import domain.event.EventType;
+import domain.event.StreamObject;
+
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -83,6 +87,49 @@ public class Query {
             Collections.reverse(subPattern);
             Optional<PatternItem> item = subPattern.stream().filter(PatternItem::isPositive).findFirst();
             return item.orElse(null);
+        }
+    }
+
+    public Set<EventType> getEventTypesBefore(int index){
+        Set<EventType> typesBefore = new HashSet<>();
+        List<PatternItem> subPattern = eventPattern.subList(0, index);
+        if(!subPattern.isEmpty()){
+            for(PatternItem item: subPattern){
+                typesBefore.add(item.getEventType());
+            }
+        }
+        return typesBefore;
+    }
+
+    public Set<EventType> getEventTypesAfter(int index){
+        Set<EventType> typesAfter = new HashSet<>();
+        List<PatternItem> subPattern = eventPattern.subList(index + 1, eventPattern.size());
+        if(!subPattern.isEmpty()){
+            for(PatternItem item: subPattern){
+                typesAfter.add(item.getEventType());
+            }
+        }
+        return typesAfter;
+    }
+
+    public Boolean isEventTypeInQuery(StreamObject streamObject){
+        EventType type = streamObject.getType();
+        Set <EventType> patternTypes = eventPattern.stream().map(PatternItem::getEventType).collect(Collectors.toSet());
+        return patternTypes.contains(type);
+    }
+
+    public List<EventType> getAllPatternTypes(){
+        return eventPattern.stream().map(PatternItem::getEventType).collect(Collectors.toList());
+    }
+
+    public int getEventIndexInPattern(Event event){
+        EventType type = event.getType();
+        Optional<PatternItem> patternItemOfType = eventPattern.stream().filter(it->it.getEventType().equals(type)).findFirst();
+        if(patternItemOfType.isPresent()){
+            return eventPattern.indexOf(patternItemOfType);
+        }
+        else {
+            return -1;
         }
     }
 }

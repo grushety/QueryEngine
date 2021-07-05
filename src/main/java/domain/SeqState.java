@@ -15,7 +15,7 @@ public class SeqState {
     private Query query;
 
     public SeqState(List<Event> events, Query query) {
-        if (events != null) {
+        if (!events.isEmpty()) {
             events.sort(StreamObject.getTsComparator());
             this.setIds();
             this.setSequenceList();
@@ -37,6 +37,8 @@ public class SeqState {
     }
 
     public void setFullList(List<Event> events) {
+        this.setIds();
+        this.setSequenceList();
         this.fullList = events;
     }
 
@@ -126,5 +128,10 @@ public class SeqState {
         this.fullList = new ArrayList<>();
         this.ids = new ArrayList<>();
         this.sequenceList = new HashMap<>();
+    }
+
+    public String toString(){
+        String str = "Events size: " + fullList.size() + ", Map size: " + sequenceList.size() + ", Ids: " + ids.size();
+        return str;
     }
 }

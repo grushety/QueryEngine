@@ -1,6 +1,5 @@
 package domain.query;
 
-import domain.event.Event;
 import domain.event.EventType;
 
 public class PatternItem {

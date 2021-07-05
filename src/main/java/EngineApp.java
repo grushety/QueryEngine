@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import domain.POGSeq;
 import domain.SeqState;
 import domain.event.Event;
 import domain.event.POG;
@@ -20,22 +21,24 @@ public class EngineApp {
         Operators op = new Operators();
         Query query = new Query(args);
         System.err.println(query.toString());
-        List<Event> focusedEvent = new ArrayList<>();
-        // ToDo: pog should array of actual pogs
-        List<POG> pogs = new ArrayList<>();
-        List<Event> outOfOrderEvents = new ArrayList<>();
+
+        POGSeq pogSeq = new POGSeq(query);
+        SeqState seqState = new SeqState(new ArrayList<>(), query);
+
         for (StreamObject streamObject : stream) {
             if (streamObject.isPog()) {
-                pogs.add((POG) streamObject);
+                pogSeq.updatePOGs((POG)streamObject);
+                seqState.setFullList(Operators.purge(seqState.getFullList(), pogSeq, query));
             } else {
                 Event ev = (Event) streamObject;
                 if (streamObject.getDelay() > max_time_in_order) {
-                    outOfOrderEvents.add(ev);
+                    seqState.addOutOfOrderEvent(ev);
+                    System.out.println(seqState);
                 } else {
-                    focusedEvent.add(ev);
+                    seqState.addOutOfOrderEvent(ev);
+                    System.out.println(seqState);
                 }
             }
         }
-        SeqState seqState = new SeqState(null, query);
     }
 }

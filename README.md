@@ -21,7 +21,7 @@ letter from A to E for negative event.
     - return as actual stream for windows part of stream list
     - at each input event recalculate time window
     - sort with ts
-(all POG changes schould be implemented in event 
+(all POG changes should be implemented in event 
 selection from stream, bei windows operator)
 5. define sel op that filter by id + 
 6. define win_seq op that filter by positive event order +
@@ -30,9 +30,13 @@ selection from stream, bei windows operator)
         - apply seq
         - check if there all  other in given order for each positive event
         - if yes save them in SeqState
-7. devine win_neg op that filter seq state +
+7. define win_neg op that filter seq state +
     - for each negative event type search it in
     each SeqState in given order 
     - if yes filter the seq from SeqState
     
 ######(b) add pog handling
+
+1. input event in loop with get next
+2. update pog array 
+3. if pog is apdated 
