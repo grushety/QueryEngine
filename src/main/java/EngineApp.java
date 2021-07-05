@@ -10,7 +10,6 @@ import operators.Operators;
 import utils.ImportService;
 
 import java.io.FileNotFoundException;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -19,44 +18,37 @@ import java.util.List;
 public class EngineApp {
 
     public static void main(String[] args) throws FileNotFoundException {
-        int max_time_in_order = 10;
+        int max_time_in_order = 5;
         List<StreamObject> stream = new ImportService().importStreamFromFile();
-        Operators op = new Operators();
         Query query = new Query(args);
-        System.err.println(query.toString());
-
         POGSeq pogSeq = new POGSeq(query);
         SeqState seqState = new SeqState(new ArrayList<>(), query);
 
+        double totalLatency = 0.0;
         for (StreamObject streamObject : stream) {
             Instant inputTime = Instant.now();
             if (streamObject.isPog()) {
+                //if a Stream Object is POG
                 pogSeq.updatePOGs((POG) streamObject);
-                //System.out.println(pogSeq);
+                // then purge and update events in SeqState
                 seqState.setFullList(Operators.purge(seqState.getFullList(), pogSeq, query));
-
-                long purgeLatency = ChronoUnit.MILLIS.between(inputTime, Instant.now());
-                System.out.println(inputTime.toString() + " until " + Instant.now().toString());
-                System.out.println("purgeLatency: " + purgeLatency);
             } else {
+                // if a Stream Object is an Event
                 Event ev = (Event) streamObject;
                 if (query.isEventTypeInQuery(ev)) {
+                    // if event is Out Of Order
                     if (streamObject.getDelay() > max_time_in_order) {
                         seqState.addOutOfOrderEvent(ev);
-
-                        long oooLatency = ChronoUnit.MILLIS.between(inputTime, Instant.now());
-                        System.out.println("Out-of-order Latency: " + oooLatency);
-                        System.out.println(seqState);
+                     //if event is In Order
                     } else {
-                        seqState.addOutOfOrderEvent(ev);
-                        long ioLatency = ChronoUnit.MILLIS.between(inputTime, Instant.now());
-                        System.out.println("In Order Latency: " + ioLatency);
-                        System.out.println(seqState);
+                        seqState.addInOrderEvent(ev);
                     }
                 }
             }
+            long latency = ChronoUnit.MICROS.between(inputTime, Instant.now());
+            totalLatency += latency;
         }
-
-        System.out.println(seqState.getSequenceList());
+        System.out.println("sum latency: " + totalLatency);
+        System.out.println("average App Latency " + totalLatency/stream.size());
     }
 }

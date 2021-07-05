@@ -4,7 +4,6 @@ import domain.event.EventType;
 import domain.event.POG;
 import domain.query.Query;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +11,6 @@ import java.util.Set;
 public class POGSeq {
     private List<EventType> typesInQuery;
     private POG[] POGSeq;
-
 
     public POGSeq(Query query) {
         typesInQuery = query.getAllPatternTypes();

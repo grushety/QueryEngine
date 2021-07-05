@@ -15,8 +15,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Operators {
-    public Operators() {}
+    public Operators() {
+    }
 
+    // Select operator used to filter events by id
     public static List<Event> select(int id, List<Event> events) {
         List<Event> filteredEvents = events.stream().filter(it -> it.getId() == id).collect(Collectors.toList());
         if (filteredEvents.isEmpty()) {
@@ -26,27 +28,27 @@ public class Operators {
         }
     }
 
+    // WinSeq operator used to find sequences that match to the positive part of the pattern
     public static Boolean winSeq(List<Event> events, List<PatternItem> positivePatterns) {
         List<Boolean> validPattern = new ArrayList<>();
         int p = 0;
-        int i = 0;
+
         // for each event in filtered (by id) and sorted (by ts)  event
         // check for each event in pattern if exist an event of given type in list of events in given order
-
         for (Event currentEvent : events) {
             PatternItem currentPattern = positivePatterns.get(p);
-            i++;
             if (currentEvent.getType().equals(currentPattern.getEventType())) {
                 validPattern.add(true);
                 p++;
             }
-            if (p>= positivePatterns.size()){
+            if (p >= positivePatterns.size()) {
                 break;
             }
         }
         return validPattern.size() == positivePatterns.size();
     }
 
+    // WinNeg operator used to find sequences that match to the negative part of the pattern
     public static Boolean winNeg(List<Event> events, List<PatternItem> negativePatterns) {
         List<Boolean> validPattern = new ArrayList<>();
         for (PatternItem currentItem : negativePatterns) {
@@ -63,24 +65,24 @@ public class Operators {
         return !validPattern.contains(true);
     }
 
-    public static List<Event> purge(List<Event> events, POGSeq pogSeq, Query query){
+    // Purge Operator used to remove events outside query window, according Conservative POG Strategy
+    public static List<Event> purge(List<Event> events, POGSeq pogSeq, Query query) {
         List<Event> copy = new ArrayList<>(events);
-        for (Event event: events){
+        for (Event event : events) {
             boolean isToPurge = isToPurge(events, pogSeq, query, event);
-            if (isToPurge){
+            if (isToPurge) {
                 copy.remove(event);
             }
         }
-        //System.out.println("PURGE: before " + events.size()+ ", after: " + copy.size());
         return copy;
     }
 
-    public static boolean isToPurge(List<Event> events, POGSeq pogSeq, Query query, Event event){
-
+    // Implementation of Algorithm 2 from base paper.
+    public static boolean isToPurge(List<Event> events, POGSeq pogSeq, Query query, Event event) {
         Instant start = event.getTs().minus(query.getWindow());
         Instant end = event.getTs();
         int index = query.getEventIndexInPattern(event);
-        if(index >= 0) {
+        if (index >= 0) {
             Set<EventType> typesBefore = query.getEventTypesBefore(index);
             Set<EventType> typesAfter = query.getEventTypesAfter(index);
 
@@ -98,15 +100,15 @@ public class Operators {
                 }
             }
             start = event.getTs();
-            end= event.getTs().plus(query.getWindow());
+            end = event.getTs().plus(query.getWindow());
+
             // for POG of all type after this Event Type
             for (POG pog : afterPOGs) {
                 if (pog.getTs().isAfter(end)) {
                     Optional<Event> relevantEventAfter = findIfTypeInWindow(start, end, pog.getType(), events);
                     if (relevantEventAfter.isEmpty()) {
                         return true;
-                    }
-                    else {
+                    } else {
                         start = relevantEventAfter.get().getTs();
                     }
                 }
@@ -116,13 +118,11 @@ public class Operators {
         return false;
     }
 
-    private static Optional<Event> findIfTypeInWindow(Instant start, Instant end, EventType type, List<Event> events){
+    // Help-method to define if exists an event of given type and given id in given time window
+    private static Optional<Event> findIfTypeInWindow(Instant start, Instant end, EventType type, List<Event> events) {
         return events.stream()
-                .filter(it-> it.getType().equals(type)&&it.getTs().isAfter(start) && end.isAfter(it.getTs()))
+                .filter(it -> it.getType().equals(type) && it.getTs().isAfter(start) && end.isAfter(it.getTs()))
                 .findFirst();
     }
 
-    public boolean isInWindow(Instant start, Instant end, Event event){
-        return event.getTs().isAfter(start) && end.isAfter(event.getTs());
-    }
 }
