@@ -3,7 +3,6 @@ package domain.query;
 import domain.event.Event;
 import domain.event.EventType;
 import domain.event.StreamObject;
-import operators.Operators;
 
 import java.time.Duration;
 import java.util.*;

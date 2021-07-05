@@ -36,6 +36,7 @@ public class EngineApp {
                 seqState.setFullList(Operators.purge(seqState.getFullList(), pogSeq, query));
 
                 long purgeLatency = ChronoUnit.MILLIS.between(inputTime, Instant.now());
+                System.out.println(inputTime.toString() + " until " + Instant.now().toString());
                 System.out.println("purgeLatency: " + purgeLatency);
             } else {
                 Event ev = (Event) streamObject;
@@ -45,15 +46,17 @@ public class EngineApp {
 
                         long oooLatency = ChronoUnit.MILLIS.between(inputTime, Instant.now());
                         System.out.println("Out-of-order Latency: " + oooLatency);
-                        //System.out.println(seqState);
+                        System.out.println(seqState);
                     } else {
                         seqState.addOutOfOrderEvent(ev);
                         long ioLatency = ChronoUnit.MILLIS.between(inputTime, Instant.now());
                         System.out.println("In Order Latency: " + ioLatency);
-                        //System.out.println(seqState);
+                        System.out.println(seqState);
                     }
                 }
             }
         }
+
+        System.out.println(seqState.getSequenceList());
     }
 }
