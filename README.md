@@ -4,7 +4,7 @@ The project explores the topic of **"Out-of-order handling in CEP (POG-based sol
 We took as the basis the article *"Sequence Pattern Query Processing over Out-of-Order Event Streams"*[[1]](#1).
 
 ### General Setting
-The project consists of an **Event Generator App** and **Query Engine App**.  
+The project consists of an **Event Generator App**[[2]](#2) and **Query Engine App**.  
 To simplify the task, we decided to make the event processing off-line instead of generating and processing events in real-time.  
 The **Event Generator App** produces a stream of events of different types (from A to J) and POG elements.
 The produced stream then is saved using JSON format.
@@ -61,4 +61,6 @@ There is a noticeable tendency for latency to increase with the higher percentag
 ## References
 <a id="1">[1]</a> 
 M. Liu, M. Li, E. Rundensteiner, D. Golovnya and K. Claypool,  *" Sequence Pattern Query Processing over Out-of-Order Event Streams,"* in 2013 IEEE 29th International Conference on Data Engineering (ICDE), null, 2009 pp. 784-795.
-DOI: 10.1109/ICDE.2009.95
+DOI: 10.1109/ICDE.2009.95  
+<a id="2">[2]</a>
+*Event Generator App*: https://github.com/grushety/EventGenerator
