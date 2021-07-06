@@ -53,7 +53,7 @@ public class Query {
     public String toString() {
         StringBuilder str = new StringBuilder("Time Window: " + window.toString() + " Event Pattern: [");
         for (PatternItem item : eventPattern) {
-            str.append(item.toStringComplete()).append(",");
+            str.append(item.toString()).append(",");
         }
         str.append("]");
         return str.toString();

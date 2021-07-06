@@ -14,12 +14,13 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EngineApp {
 
     public static void main(String[] args) throws FileNotFoundException {
         int max_time_in_order = 5;
-        String filename = "src/main/resources/stream_with_POGs_20_out_of_order_10_negative_20_number_of_events_1000.json";
+        String filename = "src/main/resources/stream_with_POGs_20_out_of_order_50_negative_20_number_of_events_1000.json";
         List<StreamObject> stream = new ImportService().importStreamFromFile(filename);
         Query query = new Query(args);
         POGSeq pogSeq = new POGSeq(query);
@@ -49,13 +50,16 @@ public class EngineApp {
             long latency = ChronoUnit.MICROS.between(inputTime, Instant.now());
             totalLatency += latency;
         }
-        System.out.println("query " + query);
-        System.out.println("average App Latency " + totalLatency/stream.size());
-        System.out.println("out: " + seqState);
-        System.out.println("matched values: " + seqState.getSequenceList());
+        // Output statistics
+        System.out.println("Query " + query);
+        System.out.println("Average App Latency " + totalLatency/stream.size());
+        System.out.println("SeqState content: " + seqState);
+        System.out.println("Matching sequences: " + seqState.getSequenceList());
 
-        //List<StreamObject> notPogs = stream.stream().filter(it-> !it.isPog()).collect(Collectors.toList());
-        //List<Event> events = notPogs.stream().map(it -> (Event)it).collect(Collectors.toList());
-        //SeqState seqState2 = new SeqState(events, query);
+        List<StreamObject> notPogs = stream.stream().filter(it-> !it.isPog()).collect(Collectors.toList());
+        List<Event> events = notPogs.stream().map(it -> (Event)it).collect(Collectors.toList());
+        SeqState seqState2 = new SeqState(events, query);
+        System.out.println("SeqState for all events content: " + seqState2);
+        System.out.println("All matching sequences: " + seqState2.getSequenceList());
     }
 }

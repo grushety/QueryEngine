@@ -43,6 +43,7 @@ public class SeqState {
     }
 
     private void setSequenceList() {
+        fullList.sort(StreamObject.getTsComparator());
         Map<Integer, List<Event>> seqState = new HashMap<>();
         for (Integer id : ids) {
             List<Event> filteredEvents = Operators.select(id, fullList);
