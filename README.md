@@ -22,8 +22,7 @@ letter from A to J.
 
 ### Description
 **POGSeq**. 
-For each event type, we keep the biggest generation timestamp sufficient  
-due to the POG ordering assumption made in the article.
+For each event type, we keep the biggest generation timestamp sufficient due to the POG ordering assumption made in the article.
 Like in the article[[1]](#1) we created an array called POGSeq to hold the resulting POG with 
 one array position for each event type in the query . Unlike the article[[1]](#1) we use one
 POG Array for negative and positive events in the query to enable simplify add operation 
@@ -32,10 +31,22 @@ We always apply both operation to check if a sequence matches to a query pattern
 
 Each update in POGSeq trigger an purge operation. Purge implemented according Algorithm 2 of article[[1]](#1)
  
-The main difference between adding in-order and out-of-order event is that 
-if we adding an out of order event, we need to insert it into the list of actual events (and 
-in the sequence corresponding to the query if exists) in accordance with its e_i.ts (that means we add 
-one sort operation for list).
+**SeqState**  
+A SeqState is a basic data structure containing an actual stack of events, 
+on which 3 basic operations are performed: adding an element,
+clearing the stack of old events
+and searching sequences that match the pattern in the request.  
+Also, SeqState contains a list of all matching sequences that can be found in the current event stack.
+
+**In Order Event**
+In-order-event initiates a search of matching sequences only if the event has the same type 
+as the last positive pattern event in the request. In other cases, it will simply be added
+to the storage of actual events of SeqState (suitable for the time window).
+
+**Out of Order Event**  
+An out of order event always initiates a search for matching sequences, 
+during which it will be inserted into the list of actual events in accordance with
+its time of occurrence.
 
 **Average App Latency computation**.
 In the original work, the latency of the application was calculated as 
@@ -49,7 +60,17 @@ We also calculate latency in microseconds,
 and not in milliseconds as in the base article, 
 since the shown difference in milliseconds is not significant.
 
+We have implemented in the article proposed techniques using java version "1.8.0_201".  
+Experiments are run on a machine with AMD Ryzen 3 2200U Prozessor and 8 GB RAM.
 
+**Improvement Ideas**  
+Due to the short time allotted for the project, many simplifications in implementation were made.
+Therefore, there is plenty of room for improvement.  
+First, the implementation of the real-time concept would significantly improve the quality of the process simulation.  
+Second, many search process optimizations for the matching sequences are possible.  
+As for the conservative POG-solution, it shows itself to be quite effective, 
+but it can be combined with other strategies, 
+depending on the percentage of-of-order events in the stream.
 ## References
 <a id="1">[1]</a> 
 M. Liu, M. Li, E. Rundensteiner, D. Golovnya and K. Claypool,  *"Sequence Pattern Query Processing over Out-of-Order Event Streams,"* in 2013 IEEE 29th International Conference on Data Engineering (ICDE), null, 2009 pp. 784-795.

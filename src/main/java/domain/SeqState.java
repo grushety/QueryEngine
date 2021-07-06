@@ -62,21 +62,7 @@ public class SeqState {
         int id = event.getId();
         if (!ids.contains(id)) { ids.add(id); }
         fullList.add(event);
-        if (matchingSequences.containsKey(id)) {
-            List<Event> filteredEvents = matchingSequences.get(id);
-            filteredEvents.add(event);
-            // events need to be sorted after ts
-            filteredEvents.sort(StreamObject.getTsComparator());
-            Boolean passPositiveFilter = Operators.winSeq(filteredEvents, query.getPositivePattern());
-            Boolean passNegativeFilter = Operators.winNeg(filteredEvents, query.getNegativePattern());
-            if (passPositiveFilter && passNegativeFilter) {
-                matchingSequences.put(id, filteredEvents);
-            } else {
-                matchingSequences.remove(id);
-            }
-        } else {
-            fullCheck(id);
-        }
+        setSequenceList();
     }
 
     public void addInOrderEvent(Event event) {
@@ -85,18 +71,9 @@ public class SeqState {
             ids.add(id);
         }
         fullList.add(event);
-        if (matchingSequences.containsKey(id)) {
-            List<Event> filteredEvents = matchingSequences.get(id);
-            filteredEvents.add(event);
-            Boolean passPositiveFilter = Operators.winSeq(filteredEvents, query.getPositivePattern());
-            Boolean passNegativeFilter = Operators.winNeg(filteredEvents, query.getNegativePattern());
-            if (passPositiveFilter && passNegativeFilter) {
-                matchingSequences.put(id, filteredEvents);
-            } else {
-                matchingSequences.remove(id);
-            }
-        } else {
-            fullCheck(id);
+        // trigger matching check only if the type of event is last in pattern
+        if(event.getType().equals(query.getLastPositiveEventType())) {
+            setSequenceList();
         }
     }
 

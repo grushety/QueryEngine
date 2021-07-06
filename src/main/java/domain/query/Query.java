@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class Query {
     private List<PatternItem> eventPattern;
     private Duration window;
+    private EventType lastPositiveEventType;
 
     public Query(List<PatternItem> eventPattern, Duration window) {
         this.window = window;
@@ -36,6 +37,7 @@ public class Query {
             pattern.setAfter(findNextPositive(index, eventPattern));
         }
         this.eventPattern = eventPattern;
+        setLastPositiveType();
     }
 
     public void setEventPattern(List<PatternItem> eventPattern) {
@@ -48,6 +50,17 @@ public class Query {
 
     public Duration getWindow() {
         return window;
+    }
+
+    private void setLastPositiveType(){
+        List<PatternItem> positive = getPositivePattern();
+        if (!positive.isEmpty()){
+            this.lastPositiveEventType = positive.get(positive.size()-1).getEventType();
+        }
+    }
+
+    public EventType getLastPositiveEventType(){
+        return lastPositiveEventType;
     }
 
     public String toString() {
