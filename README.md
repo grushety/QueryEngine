@@ -46,18 +46,6 @@ We also calculate latency in microseconds (not in milliseconds as in [[1]](#1)) 
 We have implemented the presented Partial-Order-Guarantee-based solution (conservative method)  using java version "1.8.0_201".  
 Experiments are run on a machine with AMD Ryzen 3 2200U Prozessor and 8 GB RAM.
 
-**Improvement Ideas**  
-Due to the short time allocated for the project, many simplifications in implementation were made.
-Therefore, there is plenty of room for improvement.  
-First, the implementation of the real-time concept would significantly improve the quality of the process simulation.  
-Second, many search process optimizations for the matching sequences are possible.  
-As for the conservative POG solution, it shows itself to be quite effective,  but it can be combined with other strategies, 
-depending on the percentage of-of-order events in the stream.
-
-**Comments to Results**  
-There is a noticeable tendency for latency to increase with the higher percentage of out-of-order events in the stream. But it is also apparent that other reasons affect the speed of calculations. For example, the more sequences corresponding to a given pattern exist, the slower the algorithm works. Also, the query characteristics significantly affect the speed of calculations: the length of the pattern and the time window.
-
-
 ## References
 <a id="1">[1]</a> 
 M. Liu, M. Li, E. Rundensteiner, D. Golovnya and K. Claypool,  *" Sequence Pattern Query Processing over Out-of-Order Event Streams,"* in 2013 IEEE 29th International Conference on Data Engineering (ICDE), null, 2009 pp. 784-795.
