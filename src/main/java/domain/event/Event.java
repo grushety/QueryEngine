@@ -16,6 +16,10 @@ public class Event extends StreamObject {
 
     @Override
     public String toString() {
+        return " " + super.getType() + " ";
+    }
+
+    public String toStringComplete() {
         return "id: " +  id + ", type: "  + super.getType() + ", generation time: " + super.getTs().toString()
                 + ", arrival time: " + super.getAts().toString();
     }

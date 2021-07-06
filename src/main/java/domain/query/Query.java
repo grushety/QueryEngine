@@ -124,11 +124,6 @@ public class Query {
 
     public int getEventIndexInPattern(Event event){
         Optional<PatternItem> patternItemOfType = eventPattern.stream().filter(it->it.getEventType().equals(event.getType())).findFirst();
-        if(patternItemOfType.isPresent()){
-            return eventPattern.indexOf(patternItemOfType.get());
-        }
-        else {
-            return -1;
-        }
+        return patternItemOfType.map(patternItem -> eventPattern.indexOf(patternItem)).orElse(-1);
     }
 }

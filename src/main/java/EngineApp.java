@@ -19,7 +19,8 @@ public class EngineApp {
 
     public static void main(String[] args) throws FileNotFoundException {
         int max_time_in_order = 5;
-        List<StreamObject> stream = new ImportService().importStreamFromFile();
+        String filename = "src/main/resources/stream_with_POGs_20_out_of_order_10_negative_20_number_of_events_1000.json";
+        List<StreamObject> stream = new ImportService().importStreamFromFile(filename);
         Query query = new Query(args);
         POGSeq pogSeq = new POGSeq(query);
         SeqState seqState = new SeqState(new ArrayList<>(), query);
@@ -48,7 +49,13 @@ public class EngineApp {
             long latency = ChronoUnit.MICROS.between(inputTime, Instant.now());
             totalLatency += latency;
         }
-        System.out.println("sum latency: " + totalLatency);
+        System.out.println("query " + query);
         System.out.println("average App Latency " + totalLatency/stream.size());
+        System.out.println("out: " + seqState);
+        System.out.println("matched values: " + seqState.getSequenceList());
+
+        //List<StreamObject> notPogs = stream.stream().filter(it-> !it.isPog()).collect(Collectors.toList());
+        //List<Event> events = notPogs.stream().map(it -> (Event)it).collect(Collectors.toList());
+        //SeqState seqState2 = new SeqState(events, query);
     }
 }

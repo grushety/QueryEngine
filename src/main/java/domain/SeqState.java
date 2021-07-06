@@ -15,13 +15,13 @@ public class SeqState {
     private Query query;
 
     public SeqState(List<Event> events, Query query) {
+        this.fullList = events;
+        this.query = query;
         if (!events.isEmpty()) {
             events.sort(StreamObject.getTsComparator());
             this.setIds();
             this.setSequenceList();
         }
-        this.fullList = events;
-        this.query = query;
     }
 
     private void setIds() {
