@@ -77,15 +77,6 @@ public class SeqState {
         }
     }
 
-    private void fullCheck(int id) {
-        List<Event> filteredEvents = Operators.select(id, fullList);
-        Boolean passPositiveFilter = Operators.winSeq(filteredEvents, query.getPositivePattern());
-        Boolean passNegativeFilter = Operators.winNeg(filteredEvents, query.getNegativePattern());
-        if (passPositiveFilter && passNegativeFilter) {
-            matchingSequences.put(id, filteredEvents);
-        }
-    }
-
     public String toString() {
         return "Events size: " + fullList.size() + ", Map size: " + matchingSequences.size() + ", Ids: " + ids.size();
     }

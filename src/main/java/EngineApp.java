@@ -1,5 +1,3 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import domain.POGSeq;
 import domain.SeqState;
 import domain.event.Event;
